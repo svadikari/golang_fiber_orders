@@ -74,6 +74,7 @@ func CreateOrders(c *fiber.Ctx) error {
 		log.Error("Failed to create order in the database", "error", result.Error)
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create order"+result.Error.Error())
 	}
+	go middleware.PublishOrder(&order, log)
 	return c.Status(fiber.StatusOK).JSON(order)
 }
 
@@ -203,6 +204,36 @@ func DeleteOrder(c *fiber.Ctx) error {
 	}
 	db.Delete(&order)
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// Start Kafka Consumer
+//
+//	@Summary		Start Kafka Consumer
+//	@Description	Start the Kafka consumer to process orders
+//	@Tags			Orders
+//	@Success		200	{object}	fiber.Map	"Kafka consumer started successfully"
+//
+//	@Router			/orders/consumer/start [get]
+func StartConsumer(c *fiber.Ctx) error {
+	middleware.StartKafkaConsumer()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Kafka consumer started successfully",
+	})
+}
+
+// Stop Kafka Consumer
+//
+//	@Summary		Stop Kafka Consumer
+//	@Description	Stop the Kafka consumer to process orders
+//	@Tags			Orders
+//	@Success		200	{object}	fiber.Map	"Kafka consumer stopped successfully"
+//
+//	@Router			/orders/consumer/stop [get]
+func StopConsumer(c *fiber.Ctx) error {
+	middleware.StopKafkaConsumer()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Kafka consumer stopped successfully",
+	})
 }
 
 func populateUserDetails(userId uint) interface{} {

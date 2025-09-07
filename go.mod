@@ -3,6 +3,7 @@ module github.com/svadikari/golang_fiber_orders
 go 1.24.0
 
 require (
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/go-resty/resty/v2 v2.16.5
 	github.com/gofiber/fiber/v2 v2.52.9

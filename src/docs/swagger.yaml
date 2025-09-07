@@ -1,5 +1,8 @@
 basePath: /
 definitions:
+  fiber.Map:
+    additionalProperties: true
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -11,7 +14,7 @@ definitions:
   middleware.GlobalErrorHandlerResp:
     properties:
       code:
-        type: string
+        type: integer
       errors:
         items:
           type: string
@@ -293,6 +296,28 @@ paths:
           schema:
             $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
       summary: Updaate Order
+      tags:
+      - Orders
+  /orders/consumer/start:
+    get:
+      description: Start the Kafka consumer to process orders
+      responses:
+        "200":
+          description: Kafka consumer started successfully
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Start Kafka Consumer
+      tags:
+      - Orders
+  /orders/consumer/stop:
+    get:
+      description: Stop the Kafka consumer to process orders
+      responses:
+        "200":
+          description: Kafka consumer stopped successfully
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Stop Kafka Consumer
       tags:
       - Orders
   /products:

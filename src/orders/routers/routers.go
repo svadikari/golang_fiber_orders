@@ -12,5 +12,7 @@ func Init(app *fiber.App) {
 		router.Put("/:id", controllers.UpdateOrder)
 		router.Get("/:id", controllers.GetOrder)
 		router.Delete("/:id", controllers.DeleteOrder)
+		router.Get("/consumer/start", controllers.StartConsumer)
+		router.Get("/consumer/stop", controllers.StopConsumer)
 	})
 }

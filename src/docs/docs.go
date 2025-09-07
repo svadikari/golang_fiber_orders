@@ -97,6 +97,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders/consumer/start": {
+            "get": {
+                "description": "Start the Kafka consumer to process orders",
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Start Kafka Consumer",
+                "responses": {
+                    "200": {
+                        "description": "Kafka consumer started successfully",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
+                        }
+                    }
+                }
+            }
+        },
+        "/orders/consumer/stop": {
+            "get": {
+                "description": "Stop the Kafka consumer to process orders",
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Stop Kafka Consumer",
+                "responses": {
+                    "200": {
+                        "description": "Kafka consumer stopped successfully",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
+                        }
+                    }
+                }
+            }
+        },
         "/orders/{id}": {
             "get": {
                 "description": "Fetch an order by ID",
@@ -404,6 +438,10 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "fiber.Map": {
+            "type": "object",
+            "additionalProperties": true
+        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -420,7 +458,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "errors": {
                     "type": "array",

@@ -132,7 +132,7 @@ Before running the application, generate the Swagger documentation:
    ```bash
    cd src
    swag fmt    # Format swagger comments
-   swag init   # Generate swagger documentation
+   swag init -pd  # Generate swagger documentation
    ```
 
 ## Build and Run
@@ -166,6 +166,8 @@ Before running the application, generate the Swagger documentation:
      -e DB_URL="postgres://user:password@host.docker.internal:5432/dbname?sslmode=disable" \
      golang-fiber-orders
    ```
+## Api Document
+![Api Image](api-image.png)
 
 ## License
 
