@@ -5,6 +5,7 @@ A RESTful service built with Go Fiber framework for managing orders and products
 ## Features
 
 - RESTful API endpoints for orders and products
+- Event-driven architecture using Apache Kafka for order processing
 - Swagger documentation
 - PostgreSQL database integration using GORM
 - Request validation
@@ -20,6 +21,7 @@ A RESTful service built with Go Fiber framework for managing orders and products
 | Fiber | v2 | Web Framework | [github.com/gofiber/fiber](https://github.com/gofiber/fiber/v2) |
 | GORM | v1.30.3 | ORM Library | [gorm.io](https://gorm.io) |
 | PostgreSQL | - | Database | [postgresql.org](https://www.postgresql.org) |
+| Apache Kafka | - | Message Broker | [kafka.apache.org](https://kafka.apache.org) |
 | Swagger | v1.16.6 | API Documentation | [github.com/gofiber/swagger](https://github.com/gofiber/swagger) |
 | Validator | v10.27.0 | Request Validation | [github.com/go-playground/validator](https://github.com/go-playground/validator) |
 
@@ -45,6 +47,8 @@ src/
 ├── middleware/
 │   ├── logger.go         # Request logging
 │   ├── request-validator.go
+│   ├── kafka-consumer.go # Kafka consumer for order processing
+│   ├── kafka-producer.go # Kafka producer for order events
 │   └── users-client.go
 ├── orders/
 │   ├── controllers/      # Order HTTP handlers
@@ -64,6 +68,7 @@ src/
 
 - Go 1.24.0 or higher
 - PostgreSQL
+- Apache Kafka
 - Make (optional, for using Makefile commands)
 
 ## Installation
@@ -79,7 +84,20 @@ src/
    go mod download
    ```
 
-3. Set up your environment variables for database connection
+3. Set up your environment variables:
+   ```bash
+   # Database configuration
+   export DB_HOST=localhost
+   export DB_PORT=5432
+   export DB_USER=your_user
+   export DB_PASSWORD=your_password
+   export DB_NAME=your_database
+
+   # Kafka configuration
+   export KAFKA_BROKER=localhost:9092
+   export KAFKA_TOPIC=orders
+   export KAFKA_CONSUMER_GROUP=orders-group
+   ```
 
 4. Run the application:
    ```bash
@@ -92,6 +110,18 @@ The API documentation is available through Swagger UI. After starting the applic
 ```
 http://localhost:8080/swagger/
 ```
+
+## Event-Driven Architecture
+
+The application implements an event-driven architecture using Apache Kafka for order processing:
+
+- **Order Events**: When an order is created or updated, it's published to a Kafka topic
+- **Event Producer**: The `kafka-producer.go` middleware handles publishing order events to Kafka
+- **Event Consumer**: The `kafka-consumer.go` middleware processes incoming order events from Kafka
+- **Configuration**: Kafka configuration is managed through environment variables:
+  - `KAFKA_BROKER`: Kafka broker address (default: localhost:9092)
+  - `KAFKA_TOPIC`: Topic for order events (default: orders)
+  - `KAFKA_CONSUMER_GROUP`: Consumer group for processing orders (default: orders-group)
 
 ## Testing
 
