@@ -1,0 +1,399 @@
+basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  middleware.GlobalErrorHandlerResp:
+    properties:
+      code:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+    type: object
+  models.Order:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      order_items:
+        items:
+          $ref: '#/definitions/models.OrderItem'
+        type: array
+      status:
+        type: string
+      total_amount:
+        type: number
+      updatedAt:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.OrderItem:
+    properties:
+      id:
+        type: integer
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      unit_price:
+        type: number
+    type: object
+  schemas.OrderItemSchema:
+    properties:
+      product_id:
+        minimum: 1
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+      unit_price:
+        type: number
+    required:
+    - product_id
+    - quantity
+    - unit_price
+    type: object
+  schemas.OrderSchema:
+    properties:
+      order_items:
+        items:
+          $ref: '#/definitions/schemas.OrderItemSchema'
+        type: array
+      status:
+        allOf:
+        - $ref: '#/definitions/schemas.OrderStatus'
+        enum:
+        - NEW
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED
+      user_id:
+        minimum: 1
+        type: integer
+    required:
+    - order_items
+    - status
+    - user_id
+    type: object
+  schemas.OrderStatus:
+    enum:
+    - NEW
+    - SHIPPED
+    - DELIVERED
+    - CANCELLED
+    type: string
+    x-enum-varnames:
+    - StatusNew
+    - StatusShipped
+    - StatusDelivered
+    - StatusCancelled
+  schemas.OrderUpdateSchema:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/schemas.OrderStatus'
+        enum:
+        - NEW
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED
+    required:
+    - status
+    type: object
+  schemas.Product:
+    properties:
+      description:
+        maxLength: 1000
+        minLength: 5
+        type: string
+      image_url:
+        type: string
+      name:
+        maxLength: 200
+        minLength: 2
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+    required:
+    - description
+    - name
+    - price
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: shyam@shyam.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server for managing products and orders.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Order, Products API
+  version: "1.0"
+paths:
+  /orders:
+    get:
+      description: Retrieve a list of all orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
+      summary: Get all orders
+      tags:
+      - Orders
+    post:
+      consumes:
+      - application/json
+      description: Creates a new order
+      parameters:
+      - description: Order payload
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.OrderSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+      summary: Create Order
+      tags:
+      - Orders
+  /orders/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Order deleted successfully
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+      summary: Delete Order
+      tags:
+      - Orders
+    get:
+      consumes:
+      - application/json
+      description: Fetch an order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+      summary: Fetch Order
+      tags:
+      - Orders
+    put:
+      consumes:
+      - application/json
+      description: Update an existing order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Order payload
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.OrderUpdateSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/middleware.GlobalErrorHandlerResp'
+      summary: Updaate Order
+      tags:
+      - Orders
+  /products:
+    get:
+      description: Retrieve a list of all products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.Product'
+            type: array
+      summary: Get all products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product
+      parameters:
+      - description: Product payload
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Product'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schemas.Product'
+      summary: Create product
+      tags:
+      - Products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete product
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: Get a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Product'
+      summary: Get product
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: Update a new product
+      parameters:
+      - description: Product payload
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Product'
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Product'
+      summary: Update product
+      tags:
+      - Products
+swagger: "2.0"
