@@ -25,7 +25,7 @@ A RESTful service built with Go Fiber framework for managing orders and products
 
 ## Author
 
-**Srinivas Vadikari**
+**Shyam Vadikari**
 - 👨‍💻 GitHub: [@svadikari](https://github.com/svadikari)
 - 🌐 Project: [golang_fiber_orders](https://github.com/svadikari/golang_fiber_orders)
 - 💼 Role: Software Engineer
